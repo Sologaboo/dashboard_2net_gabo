@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SpeechHub Cloud - Buscador de Speeches</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Header Superior con Buscador -->
+  <header class="top-header">
+    <div class="header-content">
+      <h1 class="logo">Speech<span>Hub</span> <small class="cloud-badge">☁️ Google Sheets DB</small></h1>
+      
+      <div class="header-actions">
+        <div class="search-box">
+          <input 
+            type="text" 
+            id="search-input" 
+            placeholder="Buscar speech por título o contenido..." 
+            autocomplete="off"
+          />
+          <button type="button" id="clear-btn" class="clear-btn hidden" title="Limpiar">&times;</button>
+        </div>
+        <button id="open-modal-btn" class="add-btn">+ Nuevo Speech</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Panel Principal -->
+  <main class="main-content">
+    
+    <!-- Categorías -->
+    <nav class="categories-bar">
+      <button class="cat-btn active" data-category="all">Todos</button>
+      <button class="cat-btn favorites-cat" data-category="favorites">⭐ Favoritos</button>
+      <button class="cat-btn" data-category="bienvenida">Bienvenida</button>
+      <button class="cat-btn" data-category="soporte">Soporte Técnico</button>
+      <button class="cat-btn" data-category="pagos">Pagos y Facturación</button>
+      <button class="cat-btn" data-category="cierre">Despedida</button>
+    </nav>
+
+    <!-- Estado de Carga / Mensajes -->
+    <div id="status-message" class="status-message">Cargando speeches...</div>
+
+    <!-- Grilla de Tarjetas -->
+    <section id="speeches-grid" class="speeches-grid"></section>
+
+  </main>
+
+  <!-- Modal para Agregar / Editar Speech -->
+  <div id="speech-modal" class="modal-overlay hidden">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="modal-title">Crear Nuevo Speech</h2>
+        <button id="close-modal-btn" class="close-btn">&times;</button>
+      </div>
+      <form id="speech-form">
+        <input type="hidden" id="speech-id">
+        <div class="form-group">
+          <label for="speech-title">Título del Speech:</label>
+          <input type="text" id="speech-title" placeholder="Ej: Confirmación de Pago Zelle" required>
+        </div>
+        <div class="form-group">
+          <label for="speech-category">Categoría:</label>
+          <select id="speech-category" required>
+            <option value="bienvenida">Bienvenida</option>
+            <option value="soporte">Soporte Técnico</option>
+            <option value="pagos">Pagos y Facturación</option>
+            <option value="cierre">Cierre</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="speech-text">Contenido del Speech:</label>
+          <textarea id="speech-text" rows="5" placeholder="Escribe el texto aquí..." required></textarea>
+        </div>
+        <div class="modal-actions">
+          <button type="button" id="cancel-modal-btn" class="btn-secondary">Cancelar</button>
+          <button type="submit" class="btn-primary">Guardar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
