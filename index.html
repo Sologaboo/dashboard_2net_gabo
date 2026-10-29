@@ -16,19 +16,19 @@
       
       <div class="header-actions">
         <button id="open-info-btn" class="info-btn">📘 Portal Informativo</button>
-        <div class="search-box">
-          <input 
-            type="text" 
-            id="search-input" 
-            placeholder="Buscar speech por título o contenido..." 
-            autocomplete="off"
-          />
-          <button type="button" id="clear-btn" class="clear-btn hidden" title="Limpiar">&times;</button>
+          <div class="search-box">
+            <input 
+              type="text" 
+              id="search-input" 
+              placeholder="Buscar speech por título o contenido..." 
+              autocomplete="off"
+            />
+            <button type="button" id="clear-btn" class="clear-btn hidden" title="Limpiar">&times;</button>
+          </div>
+          <button id="open-modal-btn" class="add-btn">+ Nuevo Speech</button>
         </div>
-        <button id="open-modal-btn" class="add-btn">+ Nuevo Speech</button>
+        <!-- En la cabecera, dentro de <div class="header-actions"> -->
       </div>
-      <!-- En la cabecera, dentro de <div class="header-actions"> -->
-    </div>
   </header>
 
   <!-- Panel Principal -->
@@ -104,59 +104,22 @@
         <button class="tab-btn" data-tab="escalaciones">🚀 Escalaciones</button>
       </nav>
 
-      <!-- Contenido de las Pestañas -->
+      <!-- Contenido dinámico de las Pestañas -->
       <div class="info-body">
-        
-        <!-- Pestaña 1: Procesos -->
         <div id="tab-procesos" class="tab-content active">
-          <h3>Procedimientos Estándar</h3>
-          <ul class="info-list">
-            <li>
-              <strong>Prueba básica ONT/ONU:</strong> Verificar potencia óptima (-18 dBm a -25 dBm). Si la potencia está fuera de rango, escalar a equipo de infraestructura.
-            </li>
-            <li>
-              <strong>Reinicio de Servicio:</strong> Aplicar ciclo de energía (30 seg) antes de proceder con descartes avanzados en router Mercusys/MikroTik.
-            </li>
-            <li>
-              <strong>Validación de Titular:</strong> Solicitud obligatoria de cédula/DNI y comprobante antes de ejecutar cambios de plan o configuraciones de IP/Bridge.
-            </li>
-          </ul>
+          <ul id="list-procesos" class="info-list"></ul>
         </div>
 
-        <!-- Pestaña 2: Datos de Empresa -->
         <div id="tab-datos" class="tab-content hidden">
-          <h3>Parámetros y Datos de Red</h3>
-          <div class="info-grid">
-            <div class="info-box">
-              <strong>DNS Primario:</strong> 1.1.1.1
-            </div>
-            <div class="info-box">
-              <strong>DNS Secundario:</strong> 8.8.8.8
-            </div>
-            <div class="info-box">
-              <strong>Horario Soporte:</strong> Lunes a Domingo (8:00 AM - 8:00 PM)
-            </div>
-            <div class="info-box">
-              <strong>Canal Zelle / Pagos:</strong> pagos@empresa.com
-            </div>
-          </div>
+          <div id="grid-datos" class="info-grid"></div>
         </div>
 
-        <!-- Pestaña 3: Escalaciones -->
         <div id="tab-escalaciones" class="tab-content hidden">
-          <h3>Rutas de Escalación de Tickets</h3>
-          <p>Utilizar según la severidad del caso reportado:</p>
-          <ul class="info-list">
-            <li><strong>Nivel 1 (Atención Inicial):</strong> Solicitud de datos, estado de cuenta y reinicio básico.</li>
-            <li><strong>Nivel 2 (Falla Masiva / Cero Señal Optica):</strong> Escalar a cuadrilla técnica mediante ticket con potencia registrada.</li>
-            <li><strong>Nivel 3 (Facturación / Ajuste especial):</strong> Escalar a Gerencia / Administración.</li>
-          </ul>
+          <ul id="list-escalaciones" class="info-list"></ul>
         </div>
-
       </div>
     </div>
   </div>
-
   <script src="script.js"></script>
 </body>
 </html>

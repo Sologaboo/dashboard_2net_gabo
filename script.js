@@ -1,7 +1,11 @@
-const API_URL = "https://script.google.com/macros/s/AKfycbzj714BoZQ5x8N8_C0HT97gyQFwUQdVSfB_ZfqkKweGuYIggB_yxJuMlI0_ZULOu0uz/exec";
+// ==========================================
+// PEGA AQUÍ TU URL DE LA APLICACIÓN WEB DE GOOGLE APPS SCRIPT
+// ==========================================
+const API_URL = "https://script.google.com/macros/s/AKfycbzWnPrRYnCMse26TN_uoHjajqA1q72pIhIPIv1Tb8k7rKkB1H4-Him_gAOgWczSSUVI/exec";
 
 document.addEventListener('DOMContentLoaded', () => {
-  let speechesData = []; // Aquí guardaremos los datos en caché local
+  let speechesData = [];
+  let portalData = [];
   let currentCategory = 'all';
 
   const speechesGrid = document.getElementById('speeches-grid');
@@ -18,17 +22,21 @@ document.addEventListener('DOMContentLoaded', () => {
   const speechForm = document.getElementById('speech-form');
   const speechIdInput = document.getElementById('speech-id');
 
-  // 1. Cargar datos una sola vez al iniciar la página
+  // --- Cargar datos de la nube (Speeches + Portal) ---
   function fetchSpeeches() {
     statusMessage.style.display = 'block';
-    statusMessage.textContent = "Cargando speeches desde la nube...";
+    statusMessage.textContent = "Cargando datos desde Google Sheets...";
 
     fetch(API_URL)
       .then(response => response.json())
       .then(data => {
-        speechesData = data; // Guardamos en memoria local
+        // Separar la respuesta en speeches y portal
+        speechesData = data.speeches || [];
+        portalData = data.portal || [];
+        
         statusMessage.style.display = 'none';
-        renderSpeeches(); // Dibujamos
+        renderSpeeches();
+        renderPortal();
       })
       .catch(error => {
         console.error("Error al cargar:", error);
@@ -36,7 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
       });
   }
 
-  // 2. Renderizar Tarjetas (Búsqueda instantánea en memoria)
+  // --- Renderizar Speeches ---
   function renderSpeeches() {
     const query = searchInput.value.toLowerCase().trim();
 
@@ -99,23 +107,84 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // 3. Cambiar favorito (Actualiza localmente al instante y sincroniza en segundo plano)
+  // --- Renderizar Portal Informativo dinámicamente desde Sheets ---
+  function renderPortal() {
+    const listProcesos = document.getElementById('list-procesos');
+    const gridDatos = document.getElementById('grid-datos');
+    const listEscalaciones = document.getElementById('list-escalaciones');
+
+    if (!listProcesos || !gridDatos || !listEscalaciones) return;
+
+    listProcesos.innerHTML = '';
+    gridDatos.innerHTML = '';
+    listEscalaciones.innerHTML = '';
+
+    portalData.forEach(item => {
+      const tab = String(item.tab).toLowerCase().trim();
+      const title = escapeHTML(String(item.title || ''));
+      const detail = escapeHTML(String(item.detail || ''));
+
+      if (tab === 'procesos') {
+        const li = document.createElement('li');
+        li.innerHTML = `<strong>${title}:</strong> ${detail}`;
+        listProcesos.appendChild(li);
+      } else if (tab === 'datos') {
+        const div = document.createElement('div');
+        div.className = 'info-box';
+        div.innerHTML = `<strong>${title}</strong>${detail}`;
+        gridDatos.appendChild(div);
+      } else if (tab === 'escalaciones') {
+        const li = document.createElement('li');
+        li.innerHTML = `<strong>${title}:</strong> ${detail}`;
+        listEscalaciones.appendChild(li);
+      }
+    });
+  }
+
+  // --- Lógica del Modal Informativo ---
+  const infoModal = document.getElementById('info-modal');
+  const openInfoBtn = document.getElementById('open-info-btn');
+  const closeInfoBtn = document.getElementById('close-info-btn');
+  const tabButtons = document.querySelectorAll('.tab-btn');
+  const tabContents = document.querySelectorAll('.tab-content');
+
+  if (openInfoBtn && infoModal) {
+    openInfoBtn.addEventListener('click', () => infoModal.classList.remove('hidden'));
+    closeInfoBtn.addEventListener('click', () => infoModal.classList.add('hidden'));
+
+    infoModal.addEventListener('click', (e) => {
+      if (e.target === infoModal) infoModal.classList.add('hidden');
+    });
+
+    tabButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const targetTab = btn.getAttribute('data-tab');
+
+        tabButtons.forEach(b => b.classList.remove('active'));
+        tabContents.forEach(c => c.classList.add('hidden'));
+
+        btn.classList.add('active');
+        const selectedContent = document.getElementById(`tab-${targetTab}`);
+        if (selectedContent) {
+          selectedContent.classList.remove('hidden');
+        }
+      });
+    });
+  }
+
+  // --- Funciones auxiliares de Speeches ---
   window.toggleFavorite = function(id, newFavStatus) {
-    // Actualizamos la memoria local inmediatamente para cero demora visual
     speechesData = speechesData.map(s => s.id == id ? {...s, isFavorite: newFavStatus} : s);
     renderSpeeches();
 
-    // Sincronización silenciosa con Google Sheets
     fetch(API_URL, {
       method: 'POST',
       body: JSON.stringify({ action: 'favorite', id: id, isFavorite: newFavStatus })
     });
   };
 
-  // 4. Eliminar speech
   window.deleteSpeech = function(id) {
     if (confirm('¿Estás seguro de que deseas eliminar este speech?')) {
-      // Borrado local inmediato
       speechesData = speechesData.filter(s => s.id != id);
       renderSpeeches();
 
@@ -126,7 +195,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
 
-  // Copiar al portapapeles
   window.copySpeech = function(button, text) {
     navigator.clipboard.writeText(text).then(() => {
       const originalText = button.innerHTML;
@@ -158,11 +226,10 @@ document.addEventListener('DOMContentLoaded', () => {
       catButtons.forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       currentCategory = btn.getAttribute('data-category');
-      renderSpeeches(); // Filtra al instante sin recargar de la nube
+      renderSpeeches();
     });
   });
 
-  // Búsqueda en vivo (Ultra rápida porque busca en la memoria del navegador)
   searchInput.addEventListener('input', () => {
     clearBtn.classList.toggle('hidden', searchInput.value.length === 0);
     renderSpeeches();
@@ -185,7 +252,6 @@ document.addEventListener('DOMContentLoaded', () => {
   closeModalBtn.addEventListener('click', () => speechModal.classList.add('hidden'));
   cancelModalBtn.addEventListener('click', () => speechModal.classList.add('hidden'));
 
-  // Guardar o Crear Speech
   speechForm.addEventListener('submit', (e) => {
     e.preventDefault();
     const id = speechIdInput.value;
@@ -204,7 +270,7 @@ document.addEventListener('DOMContentLoaded', () => {
       } else {
         speechesData.unshift({ id: speechId, title, category, isFavorite: false, text });
       }
-      renderSpeeches(); // Se actualiza visualmente al instante
+      renderSpeeches();
 
       fetch(API_URL, {
         method: 'POST',
@@ -221,40 +287,6 @@ document.addEventListener('DOMContentLoaded', () => {
     return str.replace(/`/g, '\\`').replace(/\$/g, '\\$');
   }
 
-  // Carga inicial
+  // Cargar todo al inicio
   fetchSpeeches();
 });
-
-// --- Lógica del Portal Informativo ---
-  const infoModal = document.getElementById('info-modal');
-  const openInfoBtn = document.getElementById('open-info-btn');
-  const closeInfoBtn = document.getElementById('close-info-btn');
-  const tabButtons = document.querySelectorAll('.tab-btn');
-  const tabContents = document.querySelectorAll('.tab-content');
-
-  if (openInfoBtn && infoModal) {
-    // Abrir / Cerrar Modal Informativo
-    openInfoBtn.addEventListener('click', () => infoModal.classList.remove('hidden'));
-    closeInfoBtn.addEventListener('click', () => infoModal.classList.add('hidden'));
-
-    // Cerrar al hacer clic fuera del contenido
-    infoModal.addEventListener('click', (e) => {
-      if (e.target === infoModal) infoModal.classList.add('hidden');
-    });
-
-    // Cambiar entre pestañas
-    tabButtons.forEach(btn => {
-      btn.addEventListener('click', () => {
-        const targetTab = btn.getAttribute('data-tab');
-
-        tabButtons.forEach(b => b.classList.remove('active'));
-        tabContents.forEach(c => c.classList.add('hidden'));
-
-        btn.classList.add('active');
-        const selectedContent = document.getElementById(`tab-${targetTab}`);
-        if (selectedContent) {
-          selectedContent.classList.remove('hidden');
-        }
-      });
-    });
-  }
