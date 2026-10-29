@@ -1,7 +1,7 @@
 // ==========================================
 // PEGA AQUÍ TU URL DE LA APLICACIÓN WEB DE GOOGLE APPS SCRIPT
 // ==========================================
-const API_URL = "https://script.google.com/macros/s/AKfycbzWnPrRYnCMse26TN_uoHjajqA1q72pIhIPIv1Tb8k7rKkB1H4-Him_gAOgWczSSUVI/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbzBzKHM8cAJ4-BIS-m6mmShndxwueANvSesqpideJKGbD5sFg7jLcqEahYjDzO_MaK3/exec";
 
 document.addEventListener('DOMContentLoaded', () => {
   let speechesData = [];
