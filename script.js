@@ -1,6 +1,3 @@
-// ==========================================
-// PEGA AQUÍ TU URL DE LA APLICACIÓN WEB DE GOOGLE APPS SCRIPT
-// ==========================================
 const API_URL = "https://script.google.com/macros/s/AKfycbzj714BoZQ5x8N8_C0HT97gyQFwUQdVSfB_ZfqkKweGuYIggB_yxJuMlI0_ZULOu0uz/exec";
 
 document.addEventListener('DOMContentLoaded', () => {
