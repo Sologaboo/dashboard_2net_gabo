@@ -89,34 +89,27 @@
       </form>
     </div>
   </div>
-  <!-- Modal / Ventana Flotante del Portal Informativo -->
+<!-- Modal / Ventana Flotante del Portal Informativo -->
   <div id="info-modal" class="modal-overlay hidden">
     <div class="modal-content info-modal-content">
       <div class="modal-header">
-        <h2>📘 Portal Informativo & Procedimientos</h2>
+        <h2>📘 Procesos y Diagnóstico</h2>
         <button id="close-info-btn" class="close-btn">&times;</button>
       </div>
 
-      <!-- Navegación interna del Portal -->
-      <nav class="info-tabs">
-        <button class="tab-btn active" data-tab="procesos">📋 Procesos & Diagnóstico</button>
-        <button class="tab-btn" data-tab="datos">🌐 Datos & Redes</button>
-        <button class="tab-btn" data-tab="escalaciones">🚀 Escalaciones</button>
-      </nav>
+      <!-- Buscador interno para los procesos -->
+      <div class="portal-search-box">
+        <input 
+          type="text" 
+          id="portal-search-input" 
+          placeholder="Buscar proceso o diagnóstico rápido..." 
+          autocomplete="off"
+        />
+      </div>
 
-      <!-- Contenido dinámico de las Pestañas -->
+      <!-- Contenedor de la lista de procesos -->
       <div class="info-body">
-        <div id="tab-procesos" class="tab-content active">
-          <ul id="list-procesos" class="info-list"></ul>
-        </div>
-
-        <div id="tab-datos" class="tab-content hidden">
-          <div id="grid-datos" class="info-grid"></div>
-        </div>
-
-        <div id="tab-escalaciones" class="tab-content hidden">
-          <ul id="list-escalaciones" class="info-list"></ul>
-        </div>
+        <ul id="list-procesos" class="info-list"></ul>
       </div>
     </div>
   </div>
