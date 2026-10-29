@@ -224,3 +224,37 @@ document.addEventListener('DOMContentLoaded', () => {
   // Carga inicial
   fetchSpeeches();
 });
+
+// --- Lógica del Portal Informativo ---
+  const infoModal = document.getElementById('info-modal');
+  const openInfoBtn = document.getElementById('open-info-btn');
+  const closeInfoBtn = document.getElementById('close-info-btn');
+  const tabButtons = document.querySelectorAll('.tab-btn');
+  const tabContents = document.querySelectorAll('.tab-content');
+
+  if (openInfoBtn && infoModal) {
+    // Abrir / Cerrar Modal Informativo
+    openInfoBtn.addEventListener('click', () => infoModal.classList.remove('hidden'));
+    closeInfoBtn.addEventListener('click', () => infoModal.classList.add('hidden'));
+
+    // Cerrar al hacer clic fuera del contenido
+    infoModal.addEventListener('click', (e) => {
+      if (e.target === infoModal) infoModal.classList.add('hidden');
+    });
+
+    // Cambiar entre pestañas
+    tabButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const targetTab = btn.getAttribute('data-tab');
+
+        tabButtons.forEach(b => b.classList.remove('active'));
+        tabContents.forEach(c => c.classList.add('hidden'));
+
+        btn.classList.add('active');
+        const selectedContent = document.getElementById(`tab-${targetTab}`);
+        if (selectedContent) {
+          selectedContent.classList.remove('hidden');
+        }
+      });
+    });
+  }
