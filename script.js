@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // --- Cargar datos de la nube (Speeches + Portal) ---
   function fetchSpeeches() {
     statusMessage.style.display = 'block';
-    statusMessage.textContent = "Cargando datos desde Google Sheets...";
+    statusMessage.textContent = "Cargando datos desde la nube...";
 
     fetch(API_URL)
       .then(response => response.json())
@@ -40,7 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
       })
       .catch(error => {
         console.error("Error al cargar:", error);
-        statusMessage.textContent = "⚠️ Error al conectar con Google Sheets.";
+        statusMessage.textContent = "⚠️ Error al conectar con la nube.";
       });
   }
 
@@ -183,14 +183,24 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   };
 
+  // --- Eliminar Speech en Google Sheets y en pantalla ---
   window.deleteSpeech = function(id) {
     if (confirm('¿Estás seguro de que deseas eliminar este speech?')) {
-      speechesData = speechesData.filter(s => s.id != id);
+      // 1. Eliminación visual inmediata en la pantalla
+      speechesData = speechesData.filter(s => String(s.id) !== String(id));
       renderSpeeches();
 
+      // 2. Enviar la orden por POST a Google Sheets para que lo borre de la base de datos
       fetch(API_URL, {
         method: 'POST',
-        body: JSON.stringify({ action: 'delete', id: id })
+        body: JSON.stringify({ action: 'delete', id: String(id) })
+      })
+      .then(response => response.json())
+      .then(res => {
+        console.log("Speech eliminado correctamente de la nube");
+      })
+      .catch(error => {
+        console.error("Error al eliminar en la nube:", error);
       });
     }
   };
