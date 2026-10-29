@@ -5,7 +5,7 @@ const API_URL = "https://script.google.com/macros/s/AKfycbzWnPrRYnCMse26TN_uoHja
 
 document.addEventListener('DOMContentLoaded', () => {
   let speechesData = [];
-  let portalData = []; // Guardará los procesos del portal
+  let portalData = [];
   let currentCategory = 'all';
 
   const speechesGrid = document.getElementById('speeches-grid');
@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const speechForm = document.getElementById('speech-form');
   const speechIdInput = document.getElementById('speech-id');
 
-  // Cargar datos de la nube
+  // --- Cargar datos de la nube (Speeches + Portal) ---
   function fetchSpeeches() {
     statusMessage.style.display = 'block';
     statusMessage.textContent = "Cargando datos desde Google Sheets...";
@@ -30,6 +30,7 @@ document.addEventListener('DOMContentLoaded', () => {
     fetch(API_URL)
       .then(response => response.json())
       .then(data => {
+        // Separar la respuesta en speeches y portal
         speechesData = data.speeches || [];
         portalData = data.portal || [];
         
@@ -43,7 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
       });
   }
 
-  // Renderizar Speeches principales
+  // --- Renderizar Speeches ---
   function renderSpeeches() {
     const query = searchInput.value.toLowerCase().trim();
 
@@ -106,65 +107,69 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // --- Renderizar y filtrar el Portal de Procesos ---
-  function renderPortal(filterQuery = '') {
+  // --- Renderizar Portal Informativo dinámicamente desde Sheets ---
+  function renderPortal() {
     const listProcesos = document.getElementById('list-procesos');
-    if (!listProcesos) return;
+    const gridDatos = document.getElementById('grid-datos');
+    const listEscalaciones = document.getElementById('list-escalaciones');
+
+    if (!listProcesos || !gridDatos || !listEscalaciones) return;
 
     listProcesos.innerHTML = '';
+    gridDatos.innerHTML = '';
+    listEscalaciones.innerHTML = '';
 
-    const query = filterQuery.toLowerCase().trim();
-    
-    // Filtrar solo los que correspondan a procesos (o todos si están en la hoja única)
-    const filteredPortal = portalData.filter(item => {
-      const title = String(item.title || '').toLowerCase();
-      const detail = String(item.detail || '').toLowerCase();
-      return title.includes(query) || detail.includes(query);
-    });
-
-    if (filteredPortal.length === 0) {
-      listProcesos.innerHTML = `<p style="text-align: center; color: #64748b; padding: 1rem;">No se encontraron procesos.</p>`;
-      return;
-    }
-
-    filteredPortal.forEach(item => {
+    portalData.forEach(item => {
+      const tab = String(item.tab).toLowerCase().trim();
       const title = escapeHTML(String(item.title || ''));
       const detail = escapeHTML(String(item.detail || ''));
 
-      const li = document.createElement('li');
-      li.innerHTML = `<strong>${title}:</strong> ${detail}`;
-      listProcesos.appendChild(li);
+      if (tab === 'procesos') {
+        const li = document.createElement('li');
+        li.innerHTML = `<strong>${title}:</strong> ${detail}`;
+        listProcesos.appendChild(li);
+      } else if (tab === 'datos') {
+        const div = document.createElement('div');
+        div.className = 'info-box';
+        div.innerHTML = `<strong>${title}</strong>${detail}`;
+        gridDatos.appendChild(div);
+      } else if (tab === 'escalaciones') {
+        const li = document.createElement('li');
+        li.innerHTML = `<strong>${title}:</strong> ${detail}`;
+        listEscalaciones.appendChild(li);
+      }
     });
   }
 
-  // --- Lógica de la Ventana Flotante del Portal ---
+  // --- Lógica del Modal Informativo ---
   const infoModal = document.getElementById('info-modal');
   const openInfoBtn = document.getElementById('open-info-btn');
   const closeInfoBtn = document.getElementById('close-info-btn');
-  const portalSearchInput = document.getElementById('portal-search-input');
+  const tabButtons = document.querySelectorAll('.tab-btn');
+  const tabContents = document.querySelectorAll('.tab-content');
 
   if (openInfoBtn && infoModal) {
-    openInfoBtn.addEventListener('click', () => {
-      infoModal.classList.remove('hidden');
-      if (portalSearchInput) {
-        portalSearchInput.value = '';
-        renderPortal();
-        portalSearchInput.focus();
-      }
-    });
-
+    openInfoBtn.addEventListener('click', () => infoModal.classList.remove('hidden'));
     closeInfoBtn.addEventListener('click', () => infoModal.classList.add('hidden'));
 
     infoModal.addEventListener('click', (e) => {
       if (e.target === infoModal) infoModal.classList.add('hidden');
     });
 
-    // Buscador interno en tiempo real dentro del portal
-    if (portalSearchInput) {
-      portalSearchInput.addEventListener('input', (e) => {
-        renderPortal(e.target.value);
+    tabButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const targetTab = btn.getAttribute('data-tab');
+
+        tabButtons.forEach(b => b.classList.remove('active'));
+        tabContents.forEach(c => c.classList.add('hidden'));
+
+        btn.classList.add('active');
+        const selectedContent = document.getElementById(`tab-${targetTab}`);
+        if (selectedContent) {
+          selectedContent.classList.remove('hidden');
+        }
       });
-    }
+    });
   }
 
   // --- Funciones auxiliares de Speeches ---
@@ -282,6 +287,6 @@ document.addEventListener('DOMContentLoaded', () => {
     return str.replace(/`/g, '\\`').replace(/\$/g, '\\$');
   }
 
-  // Carga inicial
+  // Cargar todo al inicio
   fetchSpeeches();
 });
