@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prototipo - Panel de Guardias SpeechHub</title>
+  <style>
+    /* Estilos base inspirados en tu diseño oscuro */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    body {
+      background-color: #0f172a;
+      color: #f8fafc;
+      padding: 2rem;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 800px;
+    }
+
+    h1 {
+      font-size: 1.5rem;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    h1 span {
+      color: #38bdf8;
+    }
+
+    /* Banner Destacado: Guardia Actual / Próxima */
+    .current-guard-banner {
+      background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+      border: 1px solid #38bdf8;
+      border-radius: 16px;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 4px 20px rgba(56, 189, 248, 0.15);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .banner-info span {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #38bdf8;
+      font-weight: 700;
+    }
+
+    .banner-info h2 {
+      font-size: 1.4rem;
+      color: #f8fafc;
+      margin-top: 0.2rem;
+    }
+
+    .banner-badge {
+      background-color: rgba(56, 189, 248, 0.1);
+      border: 1px solid #38bdf8;
+      color: #38bdf8;
+      padding: 0.5rem 1rem;
+      border-radius: 9999px;
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    /* Grilla de Próximas Guardias */
+    .section-title {
+      font-size: 1.1rem;
+      color: #94a3b8;
+      margin-bottom: 1rem;
+    }
+
+    .guards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 1rem;
+    }
+
+    .guard-card {
+      background-color: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 12px;
+      padding: 1.2rem;
+      transition: all 0.2s ease;
+    }
+
+    .guard-card:hover {
+      border-color: #38bdf8;
+      transform: translateY(-2px);
+    }
+
+    .guard-date {
+      font-size: 0.85rem;
+      color: #38bdf8;
+      font-weight: 600;
+      margin-bottom: 0.4rem;
+    }
+
+    .guard-name {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #f1f5f9;
+      margin-bottom: 0.5rem;
+    }
+
+    .guard-shift {
+      font-size: 0.8rem;
+      background-color: #0f172a;
+      color: #94a3b8;
+      padding: 0.2rem 0.6rem;
+      border-radius: 6px;
+      display: inline-block;
+      border: 1px solid #334155;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>🗓️ Panel de <span>Guardias de Fin de Semana</span></h1>
+
+    <!-- Banner Superior Dinámico -->
+    <div class="current-guard-banner">
+      <div class="banner-info">
+        <span>Próxima Guardia Activa</span>
+        <h2 id="current-guard-text">Cargando turno actual...</h2>
+      </div>
+      <div class="banner-badge" id="current-guard-date">--/--</div>
+    </div>
+
+    <!-- Lista de Fines de Semana -->
+    <p class="section-title">Calendario de Turnos Asignados</p>
+    <div class="guards-grid" id="guards-container">
+      <!-- Se llenará dinámicamente con JavaScript -->
+    </div>
+  </div>
+
+  <script>
+    // Datos simulados (que luego vendrán de tu pestaña "Guardias" en Google Sheets)
+    const mockGuards = [
+      { date: "7 y 8 de Noviembre, 2026", employee: "Alejandro", shift: "Fin de semana completo (24h)" },
+      { date: "14 y 15 de Noviembre, 2026", employee: "Mariana Pérez", shift: "Turno Diurno (8am - 4pm)" },
+      { date: "21 y 22 de Noviembre, 2026", employee: "Carlos Gómez", shift: "Fin de semana completo (24h)" },
+      { date: "28 y 29 de Noviembre, 2026", employee: "Alejandro", shift: "Turno Diurno (8am - 4pm)" }
+    ];
+
+    function renderGuardPanel() {
+      // 1. Mostrar la primera guardia como destacada en el banner
+      if (mockGuards.length > 0) {
+        document.getElementById('current-guard-text').textContent = mockGuards[0].employee;
+        document.getElementById('current-guard-date').textContent = mockGuards[0].date;
+      }
+
+      // 2. Renderizar la grilla de turnos
+      const container = document.getElementById('guards-container');
+      container.innerHTML = '';
+
+      mockGuards.forEach((guard, index) => {
+        const card = document.createElement('div');
+        card.className = 'guard-card';
+        card.innerHTML = `
+          <div class="guard-date">📅 ${guard.date}</div>
+          <div class="guard-name">👤 ${guard.employee}</div>
+          <div class="guard-shift">${guard.shift}</div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    // Inicializar prototipo
+    renderGuardPanel();
+  </script>
+
+</body>
+</html>
