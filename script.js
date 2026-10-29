@@ -8,12 +8,14 @@ document.addEventListener('DOMContentLoaded', () => {
   let portalData = [];
   let currentCategory = 'all';
 
+  // Elementos DOM de Speeches
   const speechesGrid = document.getElementById('speeches-grid');
   const searchInput = document.getElementById('search-input');
   const clearBtn = document.getElementById('clear-btn');
   const catButtons = document.querySelectorAll('.cat-btn');
   const statusMessage = document.getElementById('status-message');
 
+  // Elementos DOM del Modal de Speeches
   const speechModal = document.getElementById('speech-modal');
   const modalTitle = document.getElementById('modal-title');
   const openModalBtn = document.getElementById('open-modal-btn');
@@ -22,38 +24,49 @@ document.addEventListener('DOMContentLoaded', () => {
   const speechForm = document.getElementById('speech-form');
   const speechIdInput = document.getElementById('speech-id');
 
-  // --- Cargar datos de la nube (Speeches + Portal) ---
+  // Elementos DOM del Portal Informativo
+  const infoModal = document.getElementById('info-modal');
+  const openInfoBtn = document.getElementById('open-info-btn');
+  const closeInfoBtn = document.getElementById('close-info-btn');
+  const portalSearchInput = document.getElementById('portal-search-input');
+
+  // --- 1. Cargar datos desde la nube (Speeches + Portal) ---
   function fetchSpeeches() {
-    statusMessage.style.display = 'block';
-    statusMessage.textContent = "Cargando datos desde la nube...";
+    if (statusMessage) {
+      statusMessage.style.display = 'block';
+      statusMessage.textContent = "Cargando datos desde la nube...";
+    }
 
     fetch(API_URL)
       .then(response => response.json())
       .then(data => {
-        // Separar la respuesta en speeches y portal
         speechesData = data.speeches || [];
         portalData = data.portal || [];
         
-        statusMessage.style.display = 'none';
+        if (statusMessage) statusMessage.style.display = 'none';
         renderSpeeches();
         renderPortal();
       })
       .catch(error => {
-        console.error("Error al cargar:", error);
-        statusMessage.textContent = "⚠️ Error al conectar con la nube.";
+        console.error("Error al cargar datos:", error);
+        if (statusMessage) {
+          statusMessage.textContent = "⚠️ Error al conectar con la nube.";
+        }
       });
   }
 
-  // --- Renderizar Speeches ---
+  // --- 2. Renderizar Speeches ---
   function renderSpeeches() {
-    const query = searchInput.value.toLowerCase().trim();
+    if (!speechesGrid) return;
+
+    const query = searchInput ? searchInput.value.toLowerCase().trim() : '';
 
     const filtered = speechesData.filter(speech => {
       let matchesCategory = false;
       if (currentCategory === 'all') {
         matchesCategory = true;
       } else if (currentCategory === 'favorites') {
-        matchesCategory = speech.isFavorite === true;
+        matchesCategory = speech.isFavorite === true || speech.isFavorite === "true";
       } else {
         matchesCategory = speech.category === currentCategory;
       }
@@ -72,6 +85,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     filtered.forEach(speech => {
+      const isFav = speech.isFavorite === true || speech.isFavorite === "true";
       const card = document.createElement('div');
       card.className = 'speech-card';
       card.innerHTML = `
@@ -79,20 +93,20 @@ document.addEventListener('DOMContentLoaded', () => {
           <div class="card-header">
             <div class="card-title-group">
               <button 
-                class="fav-btn ${speech.isFavorite ? 'is-fav' : ''}" 
-                onclick="toggleFavorite('${speech.id}', ${!speech.isFavorite})"
-                title="${speech.isFavorite ? 'Quitar de Favoritos' : 'Marcar como Favorito'}"
+                class="fav-btn ${isFav ? 'is-fav' : ''}" 
+                onclick="toggleFavorite('${speech.id}', ${!isFav})"
+                title="${isFav ? 'Quitar de Favoritos' : 'Marcar como Favorito'}"
               >
                 ⭐
               </button>
-              <h3 class="card-title">${speech.title}</h3>
+              <h3 class="card-title">${escapeHTML(String(speech.title || ''))}</h3>
             </div>
-            <span class="card-tag">${speech.category}</span>
+            <span class="card-tag">${escapeHTML(String(speech.category || ''))}</span>
           </div>
-          <p class="card-body">${escapeHTML(String(speech.text))}</p>
+          <p class="card-body">${escapeHTML(String(speech.text || ''))}</p>
         </div>
         <div class="card-actions">
-          <button class="copy-btn" onclick="copySpeech(this, \`${escapeQuotes(String(speech.text))}\`)">
+          <button class="copy-btn" onclick="copySpeech(this, \`${escapeQuotes(String(speech.text || ''))}\`)">
             📋 Copiar
           </button>
           <button class="edit-btn" onclick="openEditModal('${speech.id}')" title="Editar Speech">
@@ -107,104 +121,132 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // --- Renderizar Portal Informativo dinámicamente desde Sheets ---
-  function renderPortal() {
+  // --- 3. Renderizar Portal Informativo (Procesos) ---
+  function renderPortal(filterQuery = '') {
     const listProcesos = document.getElementById('list-procesos');
-    const gridDatos = document.getElementById('grid-datos');
-    const listEscalaciones = document.getElementById('list-escalaciones');
-
-    if (!listProcesos || !gridDatos || !listEscalaciones) return;
+    if (!listProcesos) return;
 
     listProcesos.innerHTML = '';
-    gridDatos.innerHTML = '';
-    listEscalaciones.innerHTML = '';
 
-    portalData.forEach(item => {
-      const tab = String(item.tab).toLowerCase().trim();
+    const query = filterQuery.toLowerCase().trim();
+
+    const filteredPortal = portalData.filter(item => {
+      const title = String(item.title || '').toLowerCase();
+      const detail = String(item.detail || '').toLowerCase();
+      return title.includes(query) || detail.includes(query);
+    });
+
+    if (filteredPortal.length === 0) {
+      listProcesos.innerHTML = `<p style="text-align: center; color: #64748b; padding: 1.5rem;">No se encontraron procesos registrados.</p>`;
+      return;
+    }
+
+    filteredPortal.forEach(item => {
       const title = escapeHTML(String(item.title || ''));
       const detail = escapeHTML(String(item.detail || ''));
 
-      if (tab === 'procesos') {
-        const li = document.createElement('li');
-        li.innerHTML = `<strong>${title}:</strong> ${detail}`;
-        listProcesos.appendChild(li);
-      } else if (tab === 'datos') {
-        const div = document.createElement('div');
-        div.className = 'info-box';
-        div.innerHTML = `<strong>${title}</strong>${detail}`;
-        gridDatos.appendChild(div);
-      } else if (tab === 'escalaciones') {
-        const li = document.createElement('li');
-        li.innerHTML = `<strong>${title}:</strong> ${detail}`;
-        listEscalaciones.appendChild(li);
+      const li = document.createElement('li');
+      li.innerHTML = `<strong>${title}:</strong> ${detail}`;
+      listProcesos.appendChild(li);
+    });
+  }
+
+  // --- 4. Guardar / Editar Speech (Acción POST) ---
+  if (speechForm) {
+    speechForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const id = speechIdInput.value;
+      const title = document.getElementById('speech-title').value.trim();
+      const category = document.getElementById('speech-category').value;
+      const text = document.getElementById('speech-text').value.trim();
+
+      if (title && text) {
+        if (speechModal) speechModal.classList.add('hidden');
+        
+        const action = id ? 'update' : 'create';
+        const speechId = id ? String(id) : Date.now().toString();
+
+        // Actualización optimista inmediata en interfaz
+        if (id) {
+          speechesData = speechesData.map(s => String(s.id) === String(id) ? {...s, title, category, text} : s);
+        } else {
+          speechesData.unshift({ id: speechId, title, category, isFavorite: false, text });
+        }
+        renderSpeeches();
+
+        // Envío seguro a Google Sheets
+        fetch(API_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'text/plain;charset=utf-8',
+          },
+          body: JSON.stringify({
+            action: action,
+            id: String(speechId),
+            title: title,
+            category: category,
+            isFavorite: false,
+            text: text
+          })
+        })
+        .then(res => res.json())
+        .then(data => console.log("Guardado en Google Sheets:", data))
+        .catch(err => console.error("Error al guardar en la nube:", err));
       }
     });
   }
 
-  // --- Lógica del Modal Informativo ---
-  const infoModal = document.getElementById('info-modal');
-  const openInfoBtn = document.getElementById('open-info-btn');
-  const closeInfoBtn = document.getElementById('close-info-btn');
-  const tabButtons = document.querySelectorAll('.tab-btn');
-  const tabContents = document.querySelectorAll('.tab-content');
+  // --- 5. Eliminar Speech (Acción POST) ---
+  window.deleteSpeech = function(id) {
+    if (confirm('¿Estás seguro de que deseas eliminar este speech?')) {
+      // Eliminación optimista en interfaz
+      speechesData = speechesData.filter(s => String(s.id) !== String(id));
+      renderSpeeches();
 
-  if (openInfoBtn && infoModal) {
-    openInfoBtn.addEventListener('click', () => infoModal.classList.remove('hidden'));
-    closeInfoBtn.addEventListener('click', () => infoModal.classList.add('hidden'));
+      // Envío seguro a Google Sheets
+      fetch(API_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'text/plain;charset=utf-8',
+        },
+        body: JSON.stringify({ action: 'delete', id: String(id) })
+      })
+      .then(res => res.json())
+      .then(data => console.log("Eliminado de Google Sheets:", data))
+      .catch(err => console.error("Error al eliminar en la nube:", err));
+    }
+  };
 
-    infoModal.addEventListener('click', (e) => {
-      if (e.target === infoModal) infoModal.classList.add('hidden');
-    });
-
-    tabButtons.forEach(btn => {
-      btn.addEventListener('click', () => {
-        const targetTab = btn.getAttribute('data-tab');
-
-        tabButtons.forEach(b => b.classList.remove('active'));
-        tabContents.forEach(c => c.classList.add('hidden'));
-
-        btn.classList.add('active');
-        const selectedContent = document.getElementById(`tab-${targetTab}`);
-        if (selectedContent) {
-          selectedContent.classList.remove('hidden');
-        }
-      });
-    });
-  }
-
-  // --- Funciones auxiliares de Speeches ---
+  // --- 6. Cambiar Favorito ---
   window.toggleFavorite = function(id, newFavStatus) {
-    speechesData = speechesData.map(s => s.id == id ? {...s, isFavorite: newFavStatus} : s);
+    speechesData = speechesData.map(s => String(s.id) === String(id) ? {...s, isFavorite: newFavStatus} : s);
     renderSpeeches();
 
     fetch(API_URL, {
       method: 'POST',
-      body: JSON.stringify({ action: 'favorite', id: id, isFavorite: newFavStatus })
-    });
+      headers: {
+        'Content-Type': 'text/plain;charset=utf-8',
+      },
+      body: JSON.stringify({ action: 'favorite', id: String(id), isFavorite: newFavStatus })
+    })
+    .catch(err => console.error("Error al actualizar favorito:", err));
   };
 
-  // --- Eliminar Speech en Google Sheets y en pantalla ---
-  window.deleteSpeech = function(id) {
-    if (confirm('¿Estás seguro de que deseas eliminar este speech?')) {
-      // 1. Eliminación visual inmediata en la pantalla
-      speechesData = speechesData.filter(s => String(s.id) !== String(id));
-      renderSpeeches();
+  // --- 7. Modal de Edición ---
+  window.openEditModal = function(id) {
+    const speech = speechesData.find(s => String(s.id) === String(id));
+    if (!speech) return;
 
-      // 2. Enviar la orden por POST a Google Sheets para que lo borre de la base de datos
-      fetch(API_URL, {
-        method: 'POST',
-        body: JSON.stringify({ action: 'delete', id: String(id) })
-      })
-      .then(response => response.json())
-      .then(res => {
-        console.log("Speech eliminado correctamente de la nube");
-      })
-      .catch(error => {
-        console.error("Error al eliminar en la nube:", error);
-      });
-    }
+    speechIdInput.value = speech.id;
+    document.getElementById('speech-title').value = speech.title || '';
+    document.getElementById('speech-category').value = speech.category || 'bienvenida';
+    document.getElementById('speech-text').value = speech.text || '';
+
+    if (modalTitle) modalTitle.textContent = "Editar Speech";
+    if (speechModal) speechModal.classList.remove('hidden');
   };
 
+  // --- 8. Copiar al Portapapeles ---
   window.copySpeech = function(button, text) {
     navigator.clipboard.writeText(text).then(() => {
       const originalText = button.innerHTML;
@@ -218,19 +260,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   };
 
-  window.openEditModal = function(id) {
-    const speech = speechesData.find(s => s.id == id);
-    if (!speech) return;
-
-    speechIdInput.value = speech.id;
-    document.getElementById('speech-title').value = speech.title;
-    document.getElementById('speech-category').value = speech.category;
-    document.getElementById('speech-text').value = speech.text;
-
-    modalTitle.textContent = "Editar Speech";
-    speechModal.classList.remove('hidden');
-  };
-
+  // --- 9. Event Listeners de Filtros y Búsqueda de Speeches ---
   catButtons.forEach(btn => {
     btn.addEventListener('click', () => {
       catButtons.forEach(b => b.classList.remove('active'));
@@ -240,55 +270,64 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  searchInput.addEventListener('input', () => {
-    clearBtn.classList.toggle('hidden', searchInput.value.length === 0);
-    renderSpeeches();
-  });
-
-  clearBtn.addEventListener('click', () => {
-    searchInput.value = '';
-    clearBtn.classList.add('hidden');
-    renderSpeeches();
-    searchInput.focus();
-  });
-
-  openModalBtn.addEventListener('click', () => {
-    speechForm.reset();
-    speechIdInput.value = '';
-    modalTitle.textContent = "Crear Nuevo Speech";
-    speechModal.classList.remove('hidden');
-  });
-
-  closeModalBtn.addEventListener('click', () => speechModal.classList.add('hidden'));
-  cancelModalBtn.addEventListener('click', () => speechModal.classList.add('hidden'));
-
-  speechForm.addEventListener('submit', (e) => {
-    e.preventDefault();
-    const id = speechIdInput.value;
-    const title = document.getElementById('speech-title').value.trim();
-    const category = document.getElementById('speech-category').value;
-    const text = document.getElementById('speech-text').value.trim();
-
-    if (title && text) {
-      speechModal.classList.add('hidden');
-      
-      const action = id ? 'update' : 'create';
-      const speechId = id ? id : Date.now().toString();
-
-      if (id) {
-        speechesData = speechesData.map(s => s.id == id ? {...s, title, category, text} : s);
-      } else {
-        speechesData.unshift({ id: speechId, title, category, isFavorite: false, text });
-      }
+  if (searchInput) {
+    searchInput.addEventListener('input', () => {
+      if (clearBtn) clearBtn.classList.toggle('hidden', searchInput.value.length === 0);
       renderSpeeches();
+    });
+  }
 
-      fetch(API_URL, {
-        method: 'POST',
-        body: JSON.stringify({ action, id: speechId, title, category, isFavorite: false, text })
+  if (clearBtn) {
+    clearBtn.addEventListener('click', () => {
+      if (searchInput) {
+        searchInput.value = '';
+        searchInput.focus();
+      }
+      clearBtn.classList.add('hidden');
+      renderSpeeches();
+    });
+  }
+
+  // Modales Abrir / Cerrar (Speeches)
+  if (openModalBtn) {
+    openModalBtn.addEventListener('click', () => {
+      if (speechForm) speechForm.reset();
+      speechIdInput.value = '';
+      if (modalTitle) modalTitle.textContent = "Crear Nuevo Speech";
+      if (speechModal) speechModal.classList.remove('hidden');
+    });
+  }
+
+  if (closeModalBtn) closeModalBtn.addEventListener('click', () => speechModal.classList.add('hidden'));
+  if (cancelModalBtn) cancelModalBtn.addEventListener('click', () => speechModal.classList.add('hidden'));
+
+  // --- 10. Event Listeners del Portal Informativo ---
+  if (openInfoBtn && infoModal) {
+    openInfoBtn.addEventListener('click', () => {
+      infoModal.classList.remove('hidden');
+      if (portalSearchInput) {
+        portalSearchInput.value = '';
+        renderPortal();
+        portalSearchInput.focus();
+      }
+    });
+
+    if (closeInfoBtn) {
+      closeInfoBtn.addEventListener('click', () => infoModal.classList.add('hidden'));
+    }
+
+    infoModal.addEventListener('click', (e) => {
+      if (e.target === infoModal) infoModal.classList.add('hidden');
+    });
+
+    if (portalSearchInput) {
+      portalSearchInput.addEventListener('input', (e) => {
+        renderPortal(e.target.value);
       });
     }
-  });
+  }
 
+  // Escapar caracteres para prevenir errores
   function escapeHTML(str) {
     return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
   }
@@ -297,6 +336,6 @@ document.addEventListener('DOMContentLoaded', () => {
     return str.replace(/`/g, '\\`').replace(/\$/g, '\\$');
   }
 
-  // Cargar todo al inicio
+  // --- Carga Inicial ---
   fetchSpeeches();
 });
