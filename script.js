@@ -1,7 +1,7 @@
 // ==========================================
 // PEGA AQUÍ TU URL DE LA APLICACIÓN WEB DE GOOGLE APPS SCRIPT
 // ==========================================
-const API_URL = "https://script.google.com/macros/s/AKfycbzjYetI4nqiJA3NkbYga7oxpgEGEX0lrxpAOJ9F8OGokVTfqV1cfmS1zEbpTsE5j_XE/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbwDsgBNBvQdo2p-wubvBkTi6ToWx4SFka5isCqrGExd3ecGgVW4k_FuUcR-bdZ37_dD/exec";
 
 document.addEventListener('DOMContentLoaded', () => {
   let speechesData = [];
@@ -31,7 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const portalSearchInput = document.getElementById('portal-search-input');
 
   // --- 1. Cargar datos desde la nube (Speeches + Portal) ---
-function fetchSpeeches() {
+  function fetchSpeeches() {
     if (statusMessage) {
       statusMessage.style.display = 'block';
       statusMessage.textContent = "Cargando datos desde la nube...";
@@ -42,14 +42,10 @@ function fetchSpeeches() {
       .then(data => {
         speechesData = data.speeches || [];
         portalData = data.portal || [];
-        const guardsData = data.guards || []; // <--- Datos de guardias
         
         if (statusMessage) statusMessage.style.display = 'none';
         renderSpeeches();
         renderPortal();
-        if (typeof renderGuards === 'function') {
-          renderGuards(guardsData); // <--- Llama a la función de guardias.js
-        }
       })
       .catch(error => {
         console.error("Error al cargar datos:", error);
