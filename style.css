@@ -6,16 +6,16 @@
 }
 
 body {
-  background-color: #0f172a;
-  color: #f8fafc;
+  background-color: #000;
+  color: #fafafa;
   min-height: 100vh;
 }
 
 /* Header superior */
 .top-header {
   width: 100%;
-  background-color: #1e293b;
-  border-bottom: 1px solid #334155;
+  background-color: #000;
+  border-bottom: 1px solid #000;
   padding: 1rem 1.5rem;
   position: sticky;
   top: 0;
@@ -43,29 +43,20 @@ body {
   font-size: 1.5rem;
   font-weight: 800;
   letter-spacing: -0.5px;
+  color: #fafafa;
 }
 
 .logo span {
-  color: #38bdf8;
+  color: #562ca9;
 }
 
-.cloud-badge {
-  font-size: 0.75rem;
-  font-weight: 500;
-  color: #38bdf8;
-  background-color: #0f172a;
-  padding: 0.2rem 0.5rem;
-  border-radius: 12px;
-  border: 1px solid #334155;
-  margin-left: 0.5rem;
-}
 
 /* Buscador */
 .search-box {
   display: flex;
   align-items: center;
   background-color: #0f172a;
-  border: 1px solid #334155;
+  border: 1px solid #fafafa;
   border-radius: 9999px;
   padding: 0.4rem 1rem;
   width: 100%;
@@ -74,7 +65,7 @@ body {
 }
 
 .search-box:focus-within {
-  border-color: #38bdf8;
+  border-color: #562ca9;
   box-shadow: 0 0 10px rgba(56, 189, 248, 0.2);
 }
 
@@ -88,13 +79,13 @@ body {
 }
 
 .search-box input::placeholder {
-  color: #64748b;
+  color: #ABB5BA;
 }
 
 .clear-btn {
   background: none;
   border: none;
-  color: #94a3b8;
+  color: #562ca9;
   font-size: 1.2rem;
   cursor: pointer;
 }
@@ -105,8 +96,8 @@ body {
 
 /* Botón Nuevo Speech */
 .add-btn {
-  background-color: #38bdf8;
-  color: #0f172a;
+  background-color: #562ca9;
+  color: #fafafa;
   border: none;
   padding: 0.55rem 1.1rem;
   border-radius: 9999px;
@@ -118,7 +109,7 @@ body {
 }
 
 .add-btn:hover {
-  background-color: #7dd3fc;
+  background-color: #000;
   transform: scale(1.03);
 }
 
@@ -139,18 +130,18 @@ body {
 .cat-btn {
   background-color: #1e293b;
   border: 1px solid #334155;
-  color: #94a3b8;
+  color: #ABB5BA;
   padding: 0.5rem 1rem;
-  border-radius: 8px;
+  border-radius: 8px; 
   cursor: pointer;
   font-size: 0.9rem;
   transition: all 0.2s ease;
 }
 
 .cat-btn:hover, .cat-btn.active {
-  background-color: #38bdf8;
-  color: #0f172a;
-  border-color: #38bdf8;
+  background-color: #562ca9;
+  color: #ABB5BA;
+  border-color: #000;
   font-weight: 600;
 }
 
@@ -162,7 +153,7 @@ body {
 
 .status-message {
   text-align: center;
-  color: #94a3b8;
+  color: #ABB5BA;
   font-size: 1rem;
   padding: 2rem 0;
 }
@@ -176,7 +167,7 @@ body {
 
 .speech-card {
   background-color: #1e293b;
-  border: 1px solid #334155;
+  border: 1px solid #562ca9;
   border-radius: 12px;
   padding: 1.25rem;
   display: flex;
@@ -186,7 +177,7 @@ body {
 }
 
 .speech-card:hover {
-  border-color: #38bdf8;
+  border-color: #000;
   transform: translateY(-2px);
 }
 
@@ -207,7 +198,7 @@ body {
 .card-title {
   font-size: 1.05rem;
   font-weight: 700;
-  color: #f1f5f9;
+  color: #ABB5BA;
 }
 
 .fav-btn {
@@ -232,18 +223,18 @@ body {
 
 .card-tag {
   font-size: 0.75rem;
-  background-color: #0f172a;
-  color: #38bdf8;
+  background-color: #562ca9;
+  color: #fafafa;
   padding: 0.2rem 0.6rem;
   border-radius: 20px;
-  border: 1px solid #38bdf8;
+  border: 1px solid #1e293b;
   text-transform: capitalize;
   white-space: nowrap;
 }
 
 .card-body {
   font-size: 0.92rem;
-  color: #cbd5e1;
+  color: #fafafa;
   line-height: 1.5;
   margin-bottom: 1.25rem;
   white-space: pre-line;
@@ -256,9 +247,9 @@ body {
 
 .copy-btn {
   flex: 1;
-  background-color: #0f172a;
-  border: 1px solid #334155;
-  color: #f8fafc;
+  background-color: #1e293b;
+  border: 1px solid #562ca9;
+  color: #fafafa;
   padding: 0.6rem;
   border-radius: 8px;
   cursor: pointer;
@@ -267,20 +258,20 @@ body {
 }
 
 .copy-btn:hover {
-  background-color: #38bdf8;
-  color: #0f172a;
-  border-color: #38bdf8;
+  background-color: #1e293b;
+  color: #fafafa;
+  border-color: #1e293b;
 }
 
 .copy-btn.copied {
   background-color: #22c55e;
-  color: #ffffff;
+  color: #fafafa;
   border-color: #22c55e;
 }
 
 .edit-btn, .delete-btn {
-  background-color: #0f172a;
-  border: 1px solid #334155;
+  background-color: #1e293b;
+  border: 1px solid #562ca9;
   padding: 0.6rem;
   border-radius: 8px;
   cursor: pointer;
@@ -289,7 +280,7 @@ body {
 }
 
 .edit-btn:hover {
-  border-color: #38bdf8;
+  border-color: #1e293b;
   color: #38bdf8;
 }
 
@@ -320,7 +311,7 @@ body {
 
 .modal-content {
   background-color: #1e293b;
-  border: 1px solid #334155;
+  border: 1px solid #fafafa;
   border-radius: 12px;
   width: 100%;
   max-width: 500px;
@@ -336,13 +327,13 @@ body {
 
 .modal-header h2 {
   font-size: 1.25rem;
-  color: #f8fafc;
+  color: #fafafa;
 }
 
 .close-btn {
   background: none;
   border: none;
-  color: #94a3b8;
+  color: #ABB5BA;
   font-size: 1.5rem;
   cursor: pointer;
 }
@@ -354,7 +345,7 @@ body {
 .form-group label {
   display: block;
   font-size: 0.85rem;
-  color: #94a3b8;
+  color: #ABB5BA;
   margin-bottom: 0.4rem;
 }
 
@@ -366,7 +357,7 @@ body {
   border: 1px solid #334155;
   border-radius: 8px;
   padding: 0.6rem 0.8rem;
-  color: #ffffff;
+  color: #fafafa;
   font-size: 0.95rem;
   outline: none;
 }
@@ -374,7 +365,7 @@ body {
 .form-group input:focus,
 .form-group select:focus,
 .form-group textarea:focus {
-  border-color: #38bdf8;
+  border-color: #562ca9;
 }
 
 .modal-actions {
@@ -387,15 +378,15 @@ body {
 .btn-secondary {
   background-color: transparent;
   border: 1px solid #334155;
-  color: #94a3b8;
+  color: #ABB5BA;
   padding: 0.5rem 1rem;
   border-radius: 8px;
   cursor: pointer;
 }
 
 .btn-primary {
-  background-color: #38bdf8;
-  color: #0f172a;
+  background-color: #562ca9;
+  color: #fafafa;
   border: none;
   padding: 0.5rem 1.2rem;
   border-radius: 8px;

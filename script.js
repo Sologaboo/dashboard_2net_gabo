@@ -1,6 +1,3 @@
-// ==========================================
-// PEGA AQUÍ TU URL DE LA APLICACIÓN WEB DE GOOGLE APPS SCRIPT
-// ==========================================
 const API_URL = "https://script.google.com/macros/s/AKfycbwDsgBNBvQdo2p-wubvBkTi6ToWx4SFka5isCqrGExd3ecGgVW4k_FuUcR-bdZ37_dD/exec";
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -30,11 +27,11 @@ document.addEventListener('DOMContentLoaded', () => {
   const closeInfoBtn = document.getElementById('close-info-btn');
   const portalSearchInput = document.getElementById('portal-search-input');
 
-  // --- 1. Cargar datos desde la nube (Speeches + Portal) ---
+  // --- 1. Cargar datos desde la nube (Speeches + Portal) Recuerda que el portal fue eliminado---
   function fetchSpeeches() {
     if (statusMessage) {
       statusMessage.style.display = 'block';
-      statusMessage.textContent = "Cargando datos desde la nube...";
+      statusMessage.textContent = "Cargando datos desde SwiftDesk...";
     }
 
     fetch(API_URL)
@@ -50,7 +47,7 @@ document.addEventListener('DOMContentLoaded', () => {
       .catch(error => {
         console.error("Error al cargar datos:", error);
         if (statusMessage) {
-          statusMessage.textContent = "⚠️ Error al conectar con la nube.";
+          statusMessage.textContent = "⚠️ Error al conectar con SwiftDesk.";
         }
       });
   }
@@ -121,7 +118,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // --- 3. Renderizar Portal Informativo (Procesos) ---
+  // --- 3. Renderizar Portal Informativo (Procesos) Eliminado---
   function renderPortal(filterQuery = '') {
     const listProcesos = document.getElementById('list-procesos');
     if (!listProcesos) return;
@@ -190,8 +187,8 @@ document.addEventListener('DOMContentLoaded', () => {
           })
         })
         .then(res => res.json())
-        .then(data => console.log("Guardado en Google Sheets:", data))
-        .catch(err => console.error("Error al guardar en la nube:", err));
+        .then(data => console.log("Guardado en SwiftDesk:", data))
+        .catch(err => console.error("Error al guardar en SwiftDesk:", err));
       }
     });
   }
@@ -212,8 +209,8 @@ document.addEventListener('DOMContentLoaded', () => {
         body: JSON.stringify({ action: 'delete', id: String(id) })
       })
       .then(res => res.json())
-      .then(data => console.log("Eliminado de Google Sheets:", data))
-      .catch(err => console.error("Error al eliminar en la nube:", err));
+      .then(data => console.log("Eliminado de SwiftDesk:", data))
+      .catch(err => console.error("Error al eliminar de SwiftDesk:", err));
     }
   };
 
@@ -250,7 +247,7 @@ document.addEventListener('DOMContentLoaded', () => {
   window.copySpeech = function(button, text) {
     navigator.clipboard.writeText(text).then(() => {
       const originalText = button.innerHTML;
-      button.innerHTML = '✅ ¡Copiado!';
+      button.innerHTML = '✅ ¡Copiado en portapapeles!';
       button.classList.add('copied');
 
       setTimeout(() => {
