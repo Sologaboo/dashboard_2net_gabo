@@ -6,6 +6,7 @@
   <title>SpeechHub Cloud - Buscador de Speeches</title>
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="style-2.css">
+  <link rel="stylesheet" href="guardias.css">
 </head>
 <body>
 
@@ -120,6 +121,25 @@
       </div>
     </div>
   </div>
+  <!-- Sección de Guardias de Fin de Semana -->
+  <section class="guardias-section">
+    <h2>🗓️ Guardias de Fin de Semana</h2>
+
+    <!-- Banner Superior: Guardia Activa -->
+    <div class="current-guard-banner">
+      <div class="banner-info">
+        <span>Próxima Guardia Activa</span>
+        <h3 id="current-guard-text">Cargando turno...</h3>
+      </div>
+      <div class="banner-badge" id="current-guard-date">--/--</div>
+    </div>
+
+    <!-- Grilla de turnos -->
+    <div class="guards-grid" id="guards-container">
+      <!-- Se puebla dinámicamente -->
+    </div>
+  </section>
   <script src="script.js"></script>
+  <script src="guardias.js"></script>
 </body>
 </html>
