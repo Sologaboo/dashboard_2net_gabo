@@ -6,6 +6,7 @@
   <title>SwiftDesk Cloud - Buscador de Speeches</title>
   <link rel="shortcut icon" href="apoyo-tecnico.png" type="image/x-icon">
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style-calculator.css">
 </head>
 <body>
 
@@ -89,6 +90,36 @@
       </form>
     </div>
   </div>
+  <!-- Módulo de Calculadora de Prorrateo Flotante -->
+<div id="prorrateo-widget" class="prorrateo-widget">
+  <!-- Botón Flotante Discreto -->
+  <button id="prorrateo-toggle" class="prorrateo-fab" title="Calculadora de Prorrateo">
+    🧮
+  </button>
+
+  <!-- Panel Desplegable de la Calculadora -->
+  <div id="prorrateo-panel" class="prorrateo-panel hidden">
+    <div class="prorrateo-header">
+      <h4>⚡ Prorrateo</h4>
+      <button id="prorrateo-close" class="prorrateo-close-btn">&times;</button>
+    </div>
+    <div class="prorrateo-body">
+      <div class="prorrateo-field">
+        <label for="prorrateo-dias">Días a calcular:</label>
+        <input type="number" id="prorrateo-dias" placeholder="Ej. 15" min="1" max="31">
+      </div>
+      <div class="prorrateo-field">
+        <label for="prorrateo-monto">Monto total del plan:</label>
+        <input type="number" id="prorrateo-monto" placeholder="Ej. 25.00" step="0.01" min="0">
+      </div>
+      <div class="prorrateo-result">
+        <span>Total a pagar:</span>
+        <h3 id="prorrateo-output">$0.00</h3>
+      </div>
+    </div>
+  </div>
+</div>
+  <script src="prorrateo.js"></script>
   <script src="funcion-saludo-hora.js"></script>
   <script src="script.js"></script>
 </body>
