@@ -1,0 +1,126 @@
+/* --- Estilos del Widget de Prorrateo Flotante --- */
+.prorrateo-widget {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 1000;
+  font-family: inherit;
+}
+
+.prorrateo-fab {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  background-color: #1e293b;
+  border: 1px solid #334155;
+  color: #38bdf8;
+  font-size: 1.2rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  transition: all 0.2s ease;
+  opacity: 0.7; /* Se mantiene discreto */
+}
+
+.prorrateo-fab:hover {
+  opacity: 1;
+  border-color: #38bdf8;
+  transform: scale(1.05);
+}
+
+.prorrateo-panel {
+  position: absolute;
+  bottom: 60px;
+  right: 0;
+  width: 260px;
+  background-color: #1e293b;
+  border: 1px solid #334155;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+  padding: 1rem;
+  animation: fadeIn 0.2s ease;
+}
+
+.prorrateo-panel.hidden {
+  display: none;
+}
+
+.prorrateo-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.8rem;
+  border-bottom: 1px solid #334155;
+  padding-bottom: 0.5rem;
+}
+
+.prorrateo-header h4 {
+  font-size: 0.95rem;
+  color: #f8fafc;
+}
+
+.prorrateo-close-btn {
+  background: none;
+  border: none;
+  color: #94a3b8;
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+.prorrateo-close-btn:hover {
+  color: #f8fafc;
+}
+
+.prorrateo-field {
+  margin-bottom: 0.7rem;
+}
+
+.prorrateo-field label {
+  display: block;
+  font-size: 0.75rem;
+  color: #94a3b8;
+  margin-bottom: 0.3rem;
+}
+
+.prorrateo-field input {
+  width: 100%;
+  background-color: #0f172a;
+  border: 1px solid #334155;
+  border-radius: 6px;
+  padding: 0.5rem;
+  color: #f8fafc;
+  font-size: 0.9rem;
+}
+
+.prorrateo-field input:focus {
+  outline: none;
+  border-color: #38bdf8;
+}
+
+.prorrateo-result {
+  margin-top: 0.8rem;
+  background-color: #0f172a;
+  padding: 0.6rem;
+  border-radius: 6px;
+  border: 1px solid #334155;
+  text-align: center;
+}
+
+.prorrateo-result span {
+  font-size: 0.7rem;
+  color: #94a3b8;
+  text-transform: uppercase;
+}
+
+.prorrateo-result h3 {
+  font-size: 1.1rem;
+  color: #38bdf8;
+  margin-top: 0.1rem;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
