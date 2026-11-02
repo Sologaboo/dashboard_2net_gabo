@@ -27,7 +27,29 @@ document.addEventListener('DOMContentLoaded', () => {
   const closeInfoBtn = document.getElementById('close-info-btn');
   const portalSearchInput = document.getElementById('portal-search-input');
 
-  // --- 1. Cargar datos desde la nube (Speeches + Portal) Recuerda que el portal fue eliminado---
+  // --- FUNCIÓN DE ADAPTACIÓN DINÁMICA DEL SALUDO ---
+  function adaptarSaludoPorHora(texto) {
+    if (!texto) return '';
+    
+    const horaActual = new Date().getHours(); // Hora actual en formato 24h (0 - 23)
+    let saludoObjetivo = "Buenos días";
+
+    // Evaluar turno (Mañana: 5-11, Tarde: 12-17, Noche: 18-4)
+    if (horaActual >= 12 && horaActual < 18) {
+      saludoObjetivo = "Buenas tardes";
+    } else if (horaActual >= 18 || horaActual < 5) {
+      saludoObjetivo = "Buenas noches";
+    }
+
+    // Reemplazo insensible a mayúsculas/minúsculas y con/sin acento
+    return texto
+      .replace(/buenos\s+d[íi]as/gi, saludoObjetivo)
+      .replace(/buen\s+d[íi]a/gi, saludoObjetivo)
+      .replace(/buenas\s+tardes/gi, saludoObjetivo)
+      .replace(/buenas\s+noches/gi, saludoObjetivo);
+  }
+
+  // --- 1. Cargar datos desde la nube (Speeches + Portal) ---
   function fetchSpeeches() {
     if (statusMessage) {
       statusMessage.style.display = 'block';
@@ -83,6 +105,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     filtered.forEach(speech => {
       const isFav = speech.isFavorite === true || speech.isFavorite === "true";
+      
+      // Adaptar el texto original dinámicamente según la hora
+      const textoAdaptado = adaptarSaludoPorHora(String(speech.text || ''));
+
       const card = document.createElement('div');
       card.className = 'speech-card';
       card.innerHTML = `
@@ -100,10 +126,10 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
             <span class="card-tag">${escapeHTML(String(speech.category || ''))}</span>
           </div>
-          <p class="card-body">${escapeHTML(String(speech.text || ''))}</p>
+          <p class="card-body">${escapeHTML(textoAdaptado)}</p>
         </div>
         <div class="card-actions">
-          <button class="copy-btn" onclick="copySpeech(this, \`${escapeQuotes(String(speech.text || ''))}\`)">
+          <button class="copy-btn" onclick="copySpeech(this, \`${escapeQuotes(textoAdaptado)}\`)">
             📋 Copiar
           </button>
           <button class="edit-btn" onclick="openEditModal('${speech.id}')" title="Editar Speech">
@@ -118,7 +144,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // --- 3. Renderizar Portal Informativo (Procesos) Eliminado---
+  // --- 3. Renderizar Portal Informativo (Procesos) ---
   function renderPortal(filterQuery = '') {
     const listProcesos = document.getElementById('list-procesos');
     if (!listProcesos) return;
@@ -163,7 +189,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const action = id ? 'update' : 'create';
         const speechId = id ? String(id) : Date.now().toString();
 
-        // Actualización optimista inmediata en interfaz
         if (id) {
           speechesData = speechesData.map(s => String(s.id) === String(id) ? {...s, title, category, text} : s);
         } else {
@@ -171,7 +196,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         renderSpeeches();
 
-        // Envío seguro a Google Sheets
         fetch(API_URL, {
           method: 'POST',
           headers: {
@@ -196,11 +220,9 @@ document.addEventListener('DOMContentLoaded', () => {
   // --- 5. Eliminar Speech (Acción POST) ---
   window.deleteSpeech = function(id) {
     if (confirm('¿Estás seguro de que deseas eliminar este speech?')) {
-      // Eliminación optimista en interfaz
       speechesData = speechesData.filter(s => String(s.id) !== String(id));
       renderSpeeches();
 
-      // Envío seguro a Google Sheets
       fetch(API_URL, {
         method: 'POST',
         headers: {
@@ -243,9 +265,11 @@ document.addEventListener('DOMContentLoaded', () => {
     if (speechModal) speechModal.classList.remove('hidden');
   };
 
-  // --- 8. Copiar al Portapapeles ---
+  // --- 8. Copiar al Portapapeles (Garantiza saludo adaptado) ---
   window.copySpeech = function(button, text) {
-    navigator.clipboard.writeText(text).then(() => {
+    const textoFinal = adaptarSaludoPorHora(text);
+
+    navigator.clipboard.writeText(textoFinal).then(() => {
       const originalText = button.innerHTML;
       button.innerHTML = '✅ ¡Copiado en portapapeles!';
       button.classList.add('copied');
