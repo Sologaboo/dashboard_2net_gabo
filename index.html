@@ -7,6 +7,7 @@
   <link rel="shortcut icon" href="apoyo-tecnico.png" type="image/x-icon">
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="style-calculator.css">
+  <link rel="stylesheet" href="calendar.css">
 </head>
 <body>
 
@@ -119,6 +120,27 @@
     </div>
   </div>
 </div>
+<!-- Botón Flotante de Calendario -->
+<button id="btnFloatingCalendar" class="floating-calendar-btn" title="Ver Agenda y Tareas">
+  📅
+</button>
+
+<!-- Ventana Emergente (Modal) -->
+<div id="calendarModal" class="calendar-modal hidden">
+  <div class="calendar-modal-content">
+    <div class="calendar-modal-header">
+      <h3>Agenda Operativa / Tareas del Día</h3>
+      <span id="btnCloseCalendar" class="close-btn">&times;</span>
+    </div>
+    <div class="calendar-modal-body">
+      <!-- Pega aquí tu enlace de Google Calendar en el src -->
+      <iframe src="https://calendar.google.com/calendar/embed?src=dc653f2f0ce9bf1dc649092c69c28a36b2425c40fb3e682c1edc6d0061ca3d29%40group.calendar.google.com&ctz=America%2FCaracas" style="border: 0" width="800" height="600" frameborder="0" scrolling="no"></iframe>" 
+              style="border: 0" width="100%" height="450" frameborder="0" scrolling="no">
+      </iframe>
+    </div>
+  </div>
+</div>
+  <script src="calendar.js"></script>
   <script src="prorrateo.js"></script>
   <script src="funcion-saludo-hora.js"></script>
   <script src="script.js"></script>

@@ -1,0 +1,119 @@
+/* ==========================================
+   1. BOTÓN FLOTANTE DEL CALENDARIO (Mismo tamaño que la calculadora)
+   ========================================== */
+.floating-calendar-btn {
+  position: fixed;
+  bottom: 95px; /* Altura ajustada para quedar justo arriba del botón de la calculadora */
+  right: 25px;   /* Misma distancia al borde derecho */
+  background-color: transparent;
+  color: white;
+  border:  1px solid #562ca9;
+  border-radius: 50%;
+  width: 50px;   /* Ajustado al tamaño estándar de la calculadora */
+  height: 50px;  /* Ajustado al tamaño estándar de la calculadora */
+  font-size: 22px; /* Tamaño del icono equilibrado */
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  z-index: 998;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s, background-color 0.2s;
+}
+
+.floating-calendar-btn:hover {
+  transform: scale(1.08);
+  background-color: transparent;
+}
+
+/* ==========================================
+   2. MODAL EN MODO OSCURO Y RESPONSIVO
+   ========================================== */
+.calendar-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 10px;
+}
+
+.calendar-modal.hidden {
+  display: none;
+}
+
+.calendar-modal-content {
+  background: #121212; /* Fondo negro / oscuro */
+  border: 1px solid #2d2d2d;
+  padding: 20px;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 700px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+  box-sizing: border-box;
+}
+
+.calendar-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.calendar-modal-header h3 {
+  margin: 0;
+  color: #f8fafc;
+  font-size: 1.1rem;
+}
+
+.close-btn {
+  font-size: 26px;
+  color: #94a3b8;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.close-btn:hover {
+  color: #ffffff;
+}
+
+.calendar-modal-body {
+  width: 100%;
+  height: 70vh;
+  max-height: 500px;
+  overflow: hidden;
+  border-radius: 8px;
+}
+
+/* Filtro para modo oscuro en el calendario de Google */
+.calendar-modal-body iframe {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  filter: invert(90%) hue-rotate(180deg) contrast(95%);
+  background-color: #121212;
+}
+
+/* ==========================================
+   3. ADAPTABILIDAD MÓVIL (RESPONSIVO)
+   ========================================== */
+@media (max-width: 768px) {
+  .calendar-modal-content {
+    width: 95%;
+    height: 85vh;
+    padding: 12px;
+  }
+  
+  .floating-calendar-btn {
+    bottom: 85px;
+    right: 15px;
+    width: 45px; /* Se ajusta ligeramente también en móvil si la calculadora es más pequeña */
+    height: 45px;
+    font-size: 18px;
+  }
+}
